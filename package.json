@@ -1,0 +1,32 @@
+{
+  "name": "turf-bezier",
+  "version": "0.0.0",
+  "description": "generate a bezier curve from a linestring",
+  "main": "index.js",
+  "scripts": {
+    "test": "tape test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Turfjs/turf-bezier.git"
+  },
+  "keywords": [
+    "turf",
+    "geometry",
+    "bezier",
+    "curve",
+    "linestring"
+  ],
+  "author": "Morgan Herlocker",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Turfjs/turf-bezier/issues"
+  },
+  "homepage": "https://github.com/Turfjs/turf-bezier",
+  "dependencies": {
+    "turf-linestring": "~0.1.0"
+  },
+  "devDependencies": {
+    "tape": "~2.13.1"
+  }
+}
