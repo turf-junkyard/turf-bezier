@@ -1,27 +1,25 @@
 // code modded from here:
 //https://github.com/leszekr/bezier-spline-js/blob/master/bezier-spline.js
-var t = {}
-t.linestring = require('turf-linestring')
+var t = {};
+t.linestring = require('turf-linestring');
 
 module.exports = function(line, resolution, intensity){
-  var lineOut = t.linestring([])
+  var lineOut = t.linestring([]);
 
-  lineOut.properties = line.properties
-  pts = []
+  lineOut.properties = line.properties;
+  pts = [];
   pts = line.geometry.coordinates.map(function(pt){
-    return {x: pt[0], y: pt[1]}
+    return {x: pt[0], y: pt[1]};
   })
 
   var spline = new Spline({
     points: pts,
     duration: resolution,
     sharpness: intensity,
-    //stepLength: distance_between_points_to_cache
   });
   for(var i=0; i<spline.duration; i+=10){
     var pos = spline.pos(i); //bezier(i/max,p1, c1, c2, p2);
     if(Math.floor(i/100)%2==0) lineOut.geometry.coordinates.push([pos.x, pos.y]);
-    //else ctx.moveTo(pos.x, pos.y);
   }
 
   return lineOut;
@@ -153,12 +151,7 @@ module.exports = function(line, resolution, intensity){
       ctx.arc(c1.x, c1.y, 3, 0, 2 * Math.PI, false);
       ctx.fill();
       ctx.stroke();
-
-      /*ctx.beginPath();
-      ctx.arc(this.centers[i].x, this.centers[i].y, 5, 0, 2 * Math.PI, false);
-      ctx.fill();
-      ctx.stroke();*/
-
+      
       ctx.beginPath();
       ctx.arc(c2.x, c2.y, 3, 0, 2 * Math.PI, false);
       ctx.fill();
