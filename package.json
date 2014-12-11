@@ -1,6 +1,6 @@
 {
   "name": "turf-bezier",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "generate a bezier curve from a linestring",
   "main": "index.js",
   "scripts": {
