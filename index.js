@@ -1,16 +1,17 @@
-// code modded from here:
-//https://github.com/leszekr/bezier-spline-js/blob/master/bezier-spline.js
-var t = {};
-t.linestring = require('turf-linestring');
+var linestring = require('turf-linestring');
 var Spline = require('./spline.js');
 
 /**
- * Takes a {@link LineString} and outputs a curved version of the line.
+ * Takes a {@link LineString} geometry returns outputs a curved version of the line
+ * by applying a [Bezier spline](http://en.wikipedia.org/wiki/B%C3%A9zier_spline)
+ * algorithm.
+ *
+ * The bezier spline implementation is by [Leszek Rybicki](http://leszek.rybicki.cc/).
  *
  * @module turf/bezier
  * @param {LineString} line
- * @param {number} resolution
- * @param {number} intensity
+ * @param {number=10000} resolution time in milliseconds between points
+ * @param {number=0.85} sharpness a measure of how curvy the path should be between splines
  * @returns {LineString} curved line
  * @example
  * var line = turf.linestring([
@@ -27,24 +28,25 @@ var Spline = require('./spline.js');
  * var result = turf.featurecollection([line, curved]);
  * //=result
  */
-module.exports = function(line, resolution, intensity){
-  var lineOut = t.linestring([]);
+module.exports = function(line, resolution, sharpness){
+  var lineOut = linestring([]);
 
   lineOut.properties = line.properties;
-  pts = [];
-  pts = line.geometry.coordinates.map(function(pt){
+  var pts = line.geometry.coordinates.map(function(pt){
     return {x: pt[0], y: pt[1]};
-  })
+  });
 
   var spline = new Spline({
     points: pts,
     duration: resolution,
-    sharpness: intensity,
+    sharpness: sharpness
   });
-  for(var i=0; i<spline.duration; i+=10){
-    var pos = spline.pos(i); //bezier(i/max,p1, c1, c2, p2);
-    if(Math.floor(i/100)%2==0) lineOut.geometry.coordinates.push([pos.x, pos.y]);
+  for (var i=0; i<spline.duration; i+=10) {
+    var pos = spline.pos(i);
+    if (Math.floor(i/100)%2===0) {
+        lineOut.geometry.coordinates.push([pos.x, pos.y]);
+    }
   }
 
   return lineOut;
-}
+};

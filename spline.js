@@ -22,7 +22,6 @@
    * along with BezierSpline.  If not, see <http://www.gnu.org/copyleft/lesser.html>.
    */
 
-
   /*
   Usage:
 
@@ -69,7 +68,7 @@ var Spline = function(options){
     this.controls.push([this.points[this.length-1],this.points[this.length-1]]);
     this.steps = this.cacheSteps(this.stepLength);
     return this;
-  }
+  };
 
   /*
     Caches an array of equidistant (more or less) points on the curve.
@@ -87,7 +86,7 @@ var Spline = function(options){
       }
     }
     return steps;
-  }
+  };
 
   /*
     returns angle and speed in the given point in the curve
@@ -98,45 +97,8 @@ var Spline = function(options){
     return {
       angle:180*Math.atan2(p1.y-p2.y, p1.x-p2.x)/3.14,
       speed:Math.sqrt((p2.x-p1.x)*(p2.x-p1.x)+(p2.y-p1.y)*(p2.y-p1.y)+(p2.z-p1.z)*(p2.z-p1.z))
-    }
-  }
-
-  /*
-    Draws the control points
-  */
-  Spline.prototype.drawControlPoints = function(ctx, color){
-    ctx.fillStyle = color||"#f60";
-    ctx.strokeStyle = "#fff";
-    ctx.lineWidth = 2;
-    for(var i=0; i<this.length; i++){
-      var p = this.points[i];
-      var c1 = this.controls[i][0];
-      var c2 = this.controls[i][1];
-
-      ctx.beginPath();
-      ctx.moveTo(c1.x,c1.y);
-      ctx.lineTo(p.x,p.y);
-      ctx.lineTo(c2.x,c2.y);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.arc(c1.x, c1.y, 3, 0, 2 * Math.PI, false);
-      ctx.fill();
-      ctx.stroke();
-      
-      ctx.beginPath();
-      ctx.arc(c2.x, c2.y, 3, 0, 2 * Math.PI, false);
-      ctx.fill();
-      ctx.stroke();
-
-
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, 7, 0, 2 * Math.PI, false);
-      ctx.fill();
-      ctx.stroke();
-    }
-    return this;
-  }
+    };
+  };
 
   /*
     Gets the position of the point, given time.
@@ -170,23 +132,6 @@ var Spline = function(options){
     var n = Math.floor((this.points.length-1)*t2);
     var t1 = (this.length-1)*t2-n;
     return bezier(t1,this.points[n],this.controls[n][1],this.controls[n+1][0],this.points[n+1]);
-  }
-
-  /*
-    Draws the line
-  */
-  Spline.prototype.draw = function(ctx,color){
-    ctx.strokeStyle = color || "#7e5e38"; // line color
-    ctx.lineWidth = 14;
-    ctx.beginPath();
-    var pos;
-    for(var i=0; i<this.duration; i+=10){
-      pos = this.pos(i); //bezier(i/max,p1, c1, c2, p2);
-      if(Math.floor(i/100)%2==0) ctx.lineTo(pos.x, pos.y);
-      else ctx.moveTo(pos.x, pos.y);
-    }
-    ctx.stroke();
-    return this;
   }
 
   module.exports = Spline;
