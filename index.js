@@ -10,8 +10,8 @@ var Spline = require('./spline.js');
  *
  * @module turf/bezier
  * @param {LineString} line
- * @param {number=10000} resolution time in milliseconds between points
- * @param {number=0.85} sharpness a measure of how curvy the path should be between splines
+ * @param {number} [resolution=10000] time in milliseconds between points
+ * @param {number} [sharpness=0.85] a measure of how curvy the path should be between splines
  * @returns {LineString} curved line
  * @example
  * var line = turf.linestring([
