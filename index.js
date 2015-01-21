@@ -2,30 +2,33 @@ var linestring = require('turf-linestring');
 var Spline = require('./spline.js');
 
 /**
- * Takes a {@link LineString} geometry returns outputs a curved version of the line
+ * Takes a {@link LineString} feature and returns a curved version of the line
  * by applying a [Bezier spline](http://en.wikipedia.org/wiki/B%C3%A9zier_spline)
  * algorithm.
  *
  * The bezier spline implementation is by [Leszek Rybicki](http://leszek.rybicki.cc/).
  *
  * @module turf/bezier
- * @param {LineString} line
+ * @param {LineString} line the input LineString
  * @param {number} [resolution=10000] time in milliseconds between points
  * @param {number} [sharpness=0.85] a measure of how curvy the path should be between splines
  * @returns {LineString} curved line
  * @example
  * var line = turf.linestring([
- *   [-76.09130859375, 18.427501971948608],
- *   [-76.695556640625, 18.729501999072138],
- *   [-76.552734375, 19.40443049681278],
- *   [-74.619140625, 19.134789188332523],
- *   [-73.65234375, 20.076570104545173],
- *   [-73.157958984375, 20.210656234489853]], {
+ *   [-76.091308, 18.427501],
+ *   [-76.695556, 18.729501],
+ *   [-76.552734, 19.40443],
+ *   [-74.61914, 19.134789],
+ *   [-73.652343, 20.07657],
+ *   [-73.157958, 20.210656]], {
  *      stroke: '#f00'
  *   });
+ *
  * var curved = turf.bezier(line);
  * curved.properties = { stroke: '#0f0' };
+ *
  * var result = turf.featurecollection([line, curved]);
+ *
  * //=result
  */
 module.exports = function(line, resolution, sharpness){
