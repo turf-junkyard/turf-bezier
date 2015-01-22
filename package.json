@@ -4,7 +4,8 @@
   "description": "generate a bezier curve from a linestring",
   "main": "index.js",
   "scripts": {
-    "test": "tape test.js"
+    "test": "tape test.js",
+    "doc": "dox -r < index.js | doxme --readme > README.md"
   },
   "repository": {
     "type": "git",
@@ -24,10 +25,12 @@
   },
   "homepage": "https://github.com/Turfjs/turf-bezier",
   "dependencies": {
-    "turf-linestring": "~0.1.0"
+    "turf-linestring": "^1.0.1"
   },
   "devDependencies": {
     "benchmark": "1.0.0",
-    "tape": "~2.13.1"
+    "tape": "~2.13.1",
+    "dox": "^0.6.1",
+    "doxme": "^1.4.2"
   }
 }
