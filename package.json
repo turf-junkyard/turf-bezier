@@ -29,8 +29,8 @@
   },
   "devDependencies": {
     "benchmark": "1.0.0",
-    "tape": "~2.13.1",
+    "tape": "~3.5.0",
     "dox": "^0.6.1",
-    "doxme": "^1.4.2"
+    "doxme": "^1.4.3"
   }
 }
