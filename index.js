@@ -2,7 +2,7 @@ var linestring = require('turf-linestring');
 var Spline = require('./spline.js');
 
 /**
- * Takes a {@link LineString} feature and returns a curved version of the line
+ * Takes a {@link LineString|line} and returns a curved version
  * by applying a [Bezier spline](http://en.wikipedia.org/wiki/B%C3%A9zier_spline)
  * algorithm.
  *
