@@ -43,11 +43,11 @@ var Spline = require('./spline.js');
  *
  * //=result
  */
-module.exports = function(line, resolution, sharpness){
+module.exports = function(line, resolution, sharpness) {
   var lineOut = linestring([]);
 
   lineOut.properties = line.properties;
-  var pts = line.geometry.coordinates.map(function(pt){
+  var pts = line.geometry.coordinates.map(function(pt) {
     return {x: pt[0], y: pt[1]};
   });
 
