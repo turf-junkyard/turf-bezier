@@ -25,7 +25,10 @@
   },
   "homepage": "https://github.com/Turfjs/turf-bezier",
   "dependencies": {
-    "turf-linestring": "^1.0.1"
+    "turf-linestring": "^1.0.1",
+    "turf-multilinestring": "^1.0.2",
+    "turf-multipolygon": "^1.0.1",
+    "turf-polygon": "^1.0.3"
   },
   "devDependencies": {
     "benchmark": "1.0.0",

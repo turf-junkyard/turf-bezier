@@ -35,6 +35,9 @@
     });
 
   */
+  
+var util = require('./geojsonutil')
+
 var Spline = function(options){
     this.points = options.points || [];
     this.duration = options.duration || 10000;
@@ -46,32 +49,31 @@ var Spline = function(options){
     this.delay = 0;
     // this is to ensure compatibility with the 2d version
     for(var i=0; i<this.length; i++) this.points[i].z = this.points[i].z || 0;
+    
+    const isRing = util.isLinearRing(this.points)
     for(var i=0; i<this.length-1; i++){
-      var p1 = this.points[i];
-      var p2 = this.points[i+1];
-      this.centers.push({x:(p1.x+p2.x)/2, y:(p1.y+p2.y)/2, z:(p1.z+p2.z)/2});
+      this.centers.push(computeCenter(this.points[i], this.points[i+1]));
     }
-    this.controls.push([this.points[0],this.points[0]]);
     for(var i=0; i<this.centers.length-1; i++){
-      var p1 = this.centers[i];
-      var p2 = this.centers[i+1];
-      var dx = this.points[i+1].x-(this.centers[i].x+this.centers[i+1].x)/2;
-      var dy = this.points[i+1].y-(this.centers[i].y+this.centers[i+1].y)/2;
-      var dz = this.points[i+1].z-(this.centers[i].y+this.centers[i+1].z)/2;
-      this.controls.push([{
-        x:(1.0-this.sharpness)*this.points[i+1].x+this.sharpness*(this.centers[i].x+dx),
-        y:(1.0-this.sharpness)*this.points[i+1].y+this.sharpness*(this.centers[i].y+dy),
-        z:(1.0-this.sharpness)*this.points[i+1].z+this.sharpness*(this.centers[i].z+dz)},
-      {
-        x:(1.0-this.sharpness)*this.points[i+1].x+this.sharpness*(this.centers[i+1].x+dx),
-        y:(1.0-this.sharpness)*this.points[i+1].y+this.sharpness*(this.centers[i+1].y+dy),
-        z:(1.0-this.sharpness)*this.points[i+1].z+this.sharpness*(this.centers[i+1].z+dz)}]);
+      this.controls.push(this.computeControlPoints(this.centers[i], this.centers[i+1], this.points[i+1]));
     }
-    this.controls.push([this.points[this.length-1],this.points[this.length-1]]);
+    if (isRing) {
+      // control points for end and start will be the same
+      var cp = this.computeControlPoints(this.centers[this.centers.length-1], this.centers[0], this.points[0]);
+      this.controls.unshift(cp); // sets the control points for the start
+      this.controls.push(cp); // sets the control points for the end
+    } else {
+      this.controls.unshift([this.points[0],this.points[0]]);
+      this.controls.push([this.points[this.length-1],this.points[this.length-1]]);
+    }
+    
     this.steps = this.cacheSteps(this.stepLength);
+    if (isRing) {
+      this.steps[this.steps.length-1] = this.steps[0]
+    }
     return this;
   };
-
+  
   /*
     Caches an array of equidistant (more or less) points on the curve.
   */
@@ -134,6 +136,28 @@ var Spline = function(options){
     var n = Math.floor((this.points.length-1)*t2);
     var t1 = (this.length-1)*t2-n;
     return bezier(t1,this.points[n],this.controls[n][1],this.controls[n+1][0],this.points[n+1]);
+  }
+
+  Spline.prototype.computeControlPoints = function (center1, center2, supportPoint) {
+    var p1 = center1;
+    var p2 = center2;
+    var dx = supportPoint.x - (p1.x + p2.x) / 2;
+    var dy = supportPoint.y - (p1.y + p2.y) / 2;
+    var dz = supportPoint.z - (p1.y + p2.z) / 2;
+    var sharpnessCompl = 1.0 - this.sharpness;
+    return [{
+      x: sharpnessCompl * supportPoint.x + this.sharpness * (p1.x + dx),
+      y: sharpnessCompl * supportPoint.y + this.sharpness * (p1.y + dy),
+      z: sharpnessCompl * supportPoint.z + this.sharpness * (p1.z + dz)
+    },{
+      x: sharpnessCompl * supportPoint.x + this.sharpness * (p2.x + dx),
+      y: sharpnessCompl * supportPoint.y + this.sharpness * (p2.y + dy),
+      z: sharpnessCompl * supportPoint.z + this.sharpness * (p2.z + dz)
+    }];
+  }
+
+  function computeCenter (p1, p2) {
+    return {x:(p1.x+p2.x)/2, y:(p1.y+p2.y)/2, z:(p1.z+p2.z)/2};
   }
 
   module.exports = Spline;
