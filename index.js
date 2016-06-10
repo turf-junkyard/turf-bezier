@@ -1,5 +1,12 @@
+'use strict'
+
 var linestring = require('turf-linestring');
+var multilinestring = require('turf-multilinestring');
+var polygon = require('turf-polygon');
+var multipolygon = require('turf-multipolygon');
+
 var Spline = require('./spline.js');
+var isLinearRing = require('./geojsonutil.js').isLinearRing
 
 /**
  * Takes a {@link LineString|line} and returns a curved version
@@ -43,11 +50,41 @@ var Spline = require('./spline.js');
  *
  * //=result
  */
-module.exports = function(line, resolution, sharpness) {
-  var lineOut = linestring([]);
+module.exports = function(feature, resolution, sharpness) {
+  var type = feature.geometry.type;
 
-  lineOut.properties = line.properties;
-  var pts = line.geometry.coordinates.map(function(pt) {
+  if (type === 'LineString') {
+    return linestring(_bezier(feature.geometry.coordinates, resolution, sharpness), feature.properties);
+  }
+  
+  if (type === 'MultiLineString') {
+    var lines = feature.geometry.coordinates.map(function(line) { 
+      return_bezier(line, resolution, sharpness)
+    })
+    return multilinestring(lines, feature.properties)
+  }
+  
+  if (type === 'Polygon') {
+    var rings = feature.geometry.coordinates.map(function(ring) { 
+      return _bezier(ring, resolution, sharpness)
+    })
+    return polygon(rings, feature.properties)
+  }
+  
+  if (type === 'MultiPolygon') {
+    let polygons = feature.geometry.coordinates.map(function(polygon) {
+      return polygon.map(function(ring) { 
+        return _bezier(ring, resolution, sharpness)
+      })
+    })
+    return multipolygon(polygons, feature.properties)
+  }
+}
+
+function _bezier(points, resolution, sharpness) {
+  var coords = [];
+
+  var pts = points.map(function(pt) {
     return {x: pt[0], y: pt[1]};
   });
 
@@ -59,9 +96,12 @@ module.exports = function(line, resolution, sharpness) {
   for (var i=0; i<spline.duration; i+=10) {
     var pos = spline.pos(i);
     if (Math.floor(i/100)%2===0) {
-        lineOut.geometry.coordinates.push([pos.x, pos.y]);
+        coords.push([pos.x, pos.y]);
     }
   }
-
-  return lineOut;
-};
+  
+  if (isLinearRing(points)) {
+    coords.push(coords[0])
+  }
+  return coords;  
+}
